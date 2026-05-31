@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAANG — Red Team Operator</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+:root{
+  --red:#e8001d;
+  --red2:#ff1a35;
+  --red-dim:rgba(232,0,29,0.12);
+  --red-glow:rgba(232,0,29,0.35);
+  --white:#f0ece4;
+  --white-dim:rgba(240,236,228,0.55);
+  --white-muted:rgba(240,236,228,0.25);
+  --bg:#080608;
+  --bg2:#0f0b0d;
+  --bg3:#160e10;
+  --border:rgba(232,0,29,0.14);
+  --border2:rgba(240,236,228,0.07);
+  --mono:'Share Tech Mono',monospace;
+  --display:'Bebas Neue',sans-serif;
+  --body:'DM Mono',monospace;
+}
+
+body{
+  background:var(--bg);
+  color:var(--white);
+  font-family:var(--body);
+  overflow-x:hidden;
+  cursor:crosshair;
+}
+
+/* custom cursor dot */
+body::after{
+  content:'';
+  position:fixed;
+  width:6px;height:6px;
+  background:var(--red);
+  border-radius:50%;
+  pointer-events:none;
+  z-index:99999;
+  transform:translate(-50%,-50%);
+  top:var(--cy,50%);left:var(--cx,50%);
+  box-shadow:0 0 8px var(--red);
+}
+
+/* diagonal stripe texture */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:repeating-linear-gradient(
+    -45deg,
+    transparent,transparent 40px,
+    rgba(232,0,29,0.012) 40px,rgba(232,0,29,0.012) 41px
+  );
+  pointer-events:none;z-index:9997;
+}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:1000;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1.1rem 3rem;
+  background:rgba(8,6,8,0.9);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  font-family:var(--display);
+  font-size:1.6rem;
+  letter-spacing:6px;
+  color:var(--white);
+}
+.nav-logo span{color:var(--red)}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{
+  text-decoration:none;
+  color:var(--white-muted);
+  font-size:0.6rem;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  transition:color 0.2s;
+  font-family:var(--mono);
+}
+.nav-links a:hover{color:var(--red)}
+.nav-right{
+  display:flex;align-items:center;gap:8px;
+  font-size:0.6rem;color:var(--white-muted);
+  font-family:var(--mono);letter-spacing:2px;
+}
+.pulse-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--red);
+  animation:pdot 2s ease-in-out infinite;
+}
+@keyframes pdot{0%,100%{box-shadow:0 0 0 0 var(--red-glow)}50%{box-shadow:0 0 0 5px transparent}}
+
+/* HERO */
+.hero{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  align-items:center;
+  padding:0 3rem;
+  position:relative;
+  overflow:hidden;
+  gap:2rem;
+}
+
+.hero-left{padding-top:5rem}
+
+.hero-tag{
+  display:inline-block;
+  font-family:var(--mono);
+  font-size:0.6rem;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--red);
+  border:1px solid var(--red);
+  padding:4px 12px;
+  margin-bottom:2rem;
+  animation:fadeUp 0.5s ease both;
+}
+
+.hero-name{
+  font-family:var(--display);
+  font-size:clamp(5rem,10vw,10rem);
+  line-height:0.88;
+  color:var(--white);
+  letter-spacing:2px;
+  animation:fadeUp 0.5s 0.1s ease both;
+  position:relative;
+}
+
+.hero-name .red-stroke{
+  font-family:var(--display);
+  font-size:clamp(5rem,10vw,10rem);
+  line-height:0.88;
+  letter-spacing:2px;
+  color:transparent;
+  -webkit-text-stroke:1.5px var(--red);
+  display:block;
+  margin-top:-0.05em;
+}
+
+.hero-sub{
+  font-family:var(--mono);
+  font-size:0.75rem;
+  color:var(--white-dim);
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin-top:2rem;
+  animation:fadeUp 0.5s 0.2s ease both;
+  line-height:2;
+}
+
+.hero-sub .target{
+  color:var(--red);
+  font-size:1rem;
+  letter-spacing:2px;
+  font-family:var(--display);
+  display:block;
+  margin-top:0.5rem;
+}
+
+.hero-right{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding-top:5rem;
+  animation:fadeUp 0.5s 0.3s ease both;
+}
+
+.ascii-art{
+  font-family:var(--mono);
+  font-size:0.55rem;
+  line-height:1.25;
+  color:var(--red);
+  opacity:0.7;
+  white-space:pre;
+  text-shadow:0 0 10px var(--red-glow);
+  user-select:none;
+}
+
+.hero-line{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--red),transparent);
+}
+
+.hero-coords{
+  position:absolute;
+  bottom:2rem;left:3rem;
+  font-family:var(--mono);
+  font-size:0.6rem;
+  color:var(--white-muted);
+  letter-spacing:2px;
+}
+
+/* SECTION BASE */
+.section{
+  padding:6rem 3rem;
+  max-width:1100px;
+  margin:0 auto;
+}
+
+.sec-head{
+  display:flex;align-items:center;gap:1.2rem;
+  margin-bottom:3.5rem;
+}
+.sec-num{
+  font-family:var(--mono);
+  font-size:0.6rem;color:var(--red);
+  letter-spacing:2px;
+}
+.sec-title{
+  font-family:var(--display);
+  font-size:2.2rem;
+  letter-spacing:6px;
+  color:var(--white);
+}
+.sec-line{flex:1;height:1px;background:var(--border)}
+
+/* ACHIEVED */
+.achieved-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1px;
+  background:var(--border);
+  border:1px solid var(--border);
+}
+
+.ach-card{
+  background:var(--bg);
+  padding:2rem 2rem 1.75rem;
+  position:relative;
+  overflow:hidden;
+  transition:background 0.25s;
+}
+.ach-card:hover{background:var(--bg3)}
+
+.ach-card::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:2px;
+  background:var(--red);
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform 0.3s ease;
+}
+.ach-card:hover::after{transform:scaleX(1)}
+
+.ach-icon{
+  font-family:var(--mono);
+  font-size:0.6rem;
+  color:var(--red);
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin-bottom:1rem;
+  opacity:0.8;
+}
+
+.ach-title{
+  font-family:var(--display);
+  font-size:1.6rem;
+  letter-spacing:3px;
+  color:var(--white);
+  margin-bottom:0.6rem;
+}
+
+.ach-desc{
+  font-size:0.7rem;
+  line-height:1.9;
+  color:var(--white-dim);
+}
+
+.ach-tags{
+  display:flex;flex-wrap:wrap;gap:6px;
+  margin-top:1.25rem;
+}
+
+.tag{
+  font-family:var(--mono);
+  font-size:0.58rem;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  padding:3px 10px;
+  border:1px solid var(--border2);
+  color:var(--white-muted);
+}
+.tag.red{border-color:var(--red);color:var(--red)}
+
+/* CURRENTLY LEARNING */
+.learning-wrap{
+  display:flex;flex-direction:column;gap:1px;
+  background:var(--border);
+  border:1px solid var(--border);
+}
+
+.learn-row{
+  display:grid;
+  grid-template-columns:200px 1fr auto;
+  align-items:center;
+  gap:2rem;
+  padding:1.5rem 2rem;
+  background:var(--bg);
+  transition:background 0.2s;
+  position:relative;
+  overflow:hidden;
+}
+.learn-row:hover{background:var(--bg3)}
+
+.learn-row::before{
+  content:'';
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:0;
+  background:var(--red-dim);
+  transition:width 0.3s ease;
+}
+.learn-row:hover::before{width:100%}
+
+.learn-name{
+  font-family:var(--display);
+  font-size:1.3rem;
+  letter-spacing:3px;
+  color:var(--white);
+  position:relative;z-index:1;
+}
+
+.learn-desc{
+  font-size:0.68rem;
+  line-height:1.8;
+  color:var(--white-dim);
+  position:relative;z-index:1;
+}
+
+.learn-status{
+  font-family:var(--mono);
+  font-size:0.58rem;
+  letter-spacing:2px;
+  color:var(--red);
+  text-transform:uppercase;
+  white-space:nowrap;
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:6px;
+}
+.learn-status::before{
+  content:'';
+  width:6px;height:6px;
+  border-radius:50%;
+  background:var(--red);
+  display:inline-block;
+  animation:pdot 2s ease-in-out infinite;
+}
+
+/* PROTOCOLS TABLE */
+.proto-table{
+  width:100%;
+  border-collapse:collapse;
+  border:1px solid var(--border);
+}
+.proto-table th{
+  text-align:left;
+  padding:0.75rem 1.25rem;
+  font-family:var(--mono);
+  font-size:0.58rem;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--red);
+  border-bottom:1px solid var(--border);
+  background:var(--bg2);
+  font-weight:400;
+}
+.proto-table td{
+  padding:1rem 1.25rem;
+  font-size:0.7rem;
+  color:var(--white-dim);
+  border-bottom:1px solid var(--border2);
+  vertical-align:top;
+  line-height:1.7;
+}
+.proto-table tr:last-child td{border-bottom:none}
+.proto-table tr{transition:background 0.15s}
+.proto-table tr:hover td{background:var(--bg3);color:var(--white)}
+.proto-name{
+  font-family:var(--display);
+  font-size:1.1rem;
+  letter-spacing:2px;
+  color:var(--white);
+}
+
+/* LINUX TERMINAL */
+.terminal{
+  border:1px solid var(--border);
+  background:var(--bg2);
+  overflow:hidden;
+}
+.term-bar{
+  display:flex;align-items:center;gap:7px;
+  padding:0.65rem 1.25rem;
+  background:var(--bg3);
+  border-bottom:1px solid var(--border);
+}
+.term-dot{width:10px;height:10px;border-radius:50%}
+.term-title{
+  font-family:var(--mono);
+  font-size:0.6rem;color:var(--white-muted);
+  letter-spacing:2px;margin-left:6px;
+}
+.term-body{
+  padding:1.75rem 2rem;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:1rem 2rem;
+}
+.cmd{display:flex;flex-direction:column;gap:1px}
+.cmd-p{font-family:var(--mono);font-size:0.72rem;color:var(--red)}
+.cmd-t{font-family:var(--mono);font-size:0.72rem;color:var(--white)}
+.cmd-c{font-family:var(--mono);font-size:0.62rem;color:var(--white-muted);padding-left:0.8rem;opacity:0.7}
+
+/* DREAM BANNER */
+.dream{
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:4rem 3rem;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  background:var(--bg2);
+}
+.dream::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse 60% 80% at 50% 50%, rgba(232,0,29,0.07) 0%, transparent 70%);
+  pointer-events:none;
+}
+.dream-label{
+  font-family:var(--mono);
+  font-size:0.6rem;
+  letter-spacing:4px;
+  color:var(--red);
+  text-transform:uppercase;
+  margin-bottom:1.5rem;
+  opacity:0.8;
+}
+.dream-title{
+  font-family:var(--display);
+  font-size:clamp(3rem,8vw,7rem);
+  letter-spacing:8px;
+  color:var(--white);
+  text-shadow:0 0 60px var(--red-glow);
+  line-height:1;
+}
+.dream-title span{
+  color:transparent;
+  -webkit-text-stroke:1.5px var(--red);
+}
+.dream-sub{
+  font-family:var(--mono);
+  font-size:0.65rem;
+  color:var(--white-muted);
+  letter-spacing:3px;
+  margin-top:1.5rem;
+  text-transform:uppercase;
+}
+
+/* FOOTER */
+footer{
+  border-top:1px solid var(--border);
+  padding:2rem 3rem;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.foot-logo{
+  font-family:var(--display);
+  font-size:1.4rem;
+  letter-spacing:5px;
+  color:var(--white);
+}
+.foot-logo span{color:var(--red)}
+.foot-right{
+  font-family:var(--mono);
+  font-size:0.6rem;
+  color:var(--white-muted);
+  letter-spacing:2px;
+  text-align:right;
+}
+.blink{animation:blink 1s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+.reveal{opacity:0;transform:translateY(14px);transition:opacity 0.55s ease,transform 0.55s ease}
+.reveal.on{opacity:1;transform:translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  nav{padding:1rem 1.5rem}
+  .nav-links{display:none}
+  .hero{grid-template-columns:1fr;padding:7rem 1.5rem 3rem;min-height:auto}
+  .hero-right{display:none}
+  .section{padding:4rem 1.5rem}
+  .achieved-grid{grid-template-columns:1fr}
+  .learn-row{grid-template-columns:1fr;gap:0.75rem}
+  footer{flex-direction:column;gap:1rem;text-align:center}
+  .dream{padding:3rem 1.5rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">F<span>AA</span>NG</div>
+  <ul class="nav-links">
+    <li><a href="#achieved">Achieved</a></li>
+    <li><a href="#learning">Learning</a></li>
+    <li><a href="#learning">Protocols</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="pulse-dot"></div>
+    <span>ACTIVE</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">// Red Team Operator in Training</div>
+    <div class="hero-name">
+      FAANG
+      <span class="red-stroke">FAANG</span>
+    </div>
+    <div class="hero-sub">
+      Networking · Linux · Security
+      <span class="target">Future: Red Team Operator</span>
+    </div>
+  </div>
+  <div class="hero-right">
+    <pre class="ascii-art">
+ ██████╗ ███████╗██████╗
+ ██╔══██╗██╔════╝██╔══██╗
+ ██████╔╝█████╗  ██║  ██║
+ ██╔══██╗██╔══╝  ██║  ██║
+ ██║  ██║███████╗██████╔╝
+ ╚═╝  ╚═╝╚══════╝╚═════╝
+ ──────────────────────────
+  T E A M  O P E R A T O R
+    </pre>
+  </div>
+  <div class="hero-line"></div>
+  <div class="hero-coords">// FAANG.SYS — BUILD_01 — 2025</div>
+</div>
+
+<!-- DREAM BANNER -->
+<div class="dream reveal">
+  <div class="dream-label">// Target Designation</div>
+  <div class="dream-title">RED <span>TEAM</span></div>
+  <div class="dream-sub">Adversary Simulation · Offensive Security · Penetration Testing</div>
+</div>
+
+<!-- ACHIEVED -->
+<div class="section" id="achieved">
+  <div class="sec-head reveal">
+    <span class="sec-num">01</span>
+    <span class="sec-title">ACHIEVED</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="achieved-grid reveal">
+    <div class="ach-card">
+      <div class="ach-icon">// Domain</div>
+      <div class="ach-title">Network Protocols</div>
+      <div class="ach-desc">Solid understanding of how data moves across modern networks. TCP/IP stack, DNS resolution, HTTP request-response cycle, ARP, DHCP, ICMP, UDP — all mapped and understood.</div>
+      <div class="ach-tags">
+        <span class="tag red">TCP/IP</span>
+        <span class="tag red">DNS</span>
+        <span class="tag red">HTTP/S</span>
+        <span class="tag red">ARP</span>
+        <span class="tag red">DHCP</span>
+        <span class="tag red">ICMP</span>
+        <span class="tag red">UDP</span>
+        <span class="tag red">FTP</span>
+        <span class="tag red">SSH</span>
+      </div>
+    </div>
+
+    <div class="ach-card">
+      <div class="ach-icon">// Command Line</div>
+      <div class="ach-title">Linux CLI Ops</div>
+      <div class="ach-desc">Comfortable operating in a Linux terminal. File and directory management, permission control with chmod and chown, executing scripts, reading system info — daily driver.</div>
+      <div class="ach-tags">
+        <span class="tag red">mkdir / rm</span>
+        <span class="tag red">chmod / chown</span>
+        <span class="tag red">ls / find</span>
+        <span class="tag red">grep / cat</span>
+        <span class="tag red">ps / top</span>
+        <span class="tag red">./execute</span>
+      </div>
+    </div>
+
+    <div class="ach-card">
+      <div class="ach-icon">// Concept</div>
+      <div class="ach-title">Debugging</div>
+      <div class="ach-desc">I always got told,a good programmar knows how to write code as well as debug code,I can proficiently Debug and read code</div>
+      <div class="ach-tags">
+        <span class="tag red">Rubber Duck Debugging</span>
+        <span class="tag red">Time Travel Debugging</span>
+        <span class="tag red">Automated Debugging</span>
+      </div>
+    </div>
+
+    <div class="ach-card">
+      <div class="ach-icon">// Programming</div>
+      <div class="ach-title">Python</div>
+      <div class="ach-desc">Accidently Learnt Python fundamentals AT FIRST while getting into Tech world :))</div>
+      <div class="ach-tags">
+        <span class="tag red">Format Specifiers</span>
+        <span class="tag red">Functions</span>
+        <span class="tag red">Data Types</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LEARNING -->
+<div class="section" id="learning">
+  <div class="sec-head reveal">
+    <span class="sec-num">02</span>
+    <span class="sec-title">CURRENTLY LEARNING</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="learning-wrap reveal">
+    <div class="learn-row">
+      <div class="learn-name">WIRESHARK</div>
+      <div class="learn-desc">Packet capture and deep traffic analysis. Learning to read raw packets, filter by protocol, spot anomalies, and reconstruct TCP streams. Core skill for any red teamer doing recon.</div>
+      <div class="learn-status">In Progress</div>
+    </div>
+    <div class="learn-row">
+      <div class="learn-name">LINUX INTERNALS</div>
+      <div class="learn-desc">Digging into the kernel — process management, memory layout, syscalls, signals, and how the OS interacts with hardware. Understanding the machine at root level.</div>
+      <div class="learn-status">In Progress</div>
+    </div>
+  </div>
+</div>
+<div class="section" id="learning">
+  <div class="sec-head reveal">
+    <span class="sec-title">MORE TO COME</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="learning-wrap reveal">
+    <div class="learn-row">
+      <div class="learn-name">COMING SOON</div>
+      <div class="learn-status">---</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-logo">F<span>AA</span>NG</div>
+  <div class="foot-right">
+    <div>2025 — Building in Public</div>
+    <div style="margin-top:4px;color:var(--red)">root@faang:~$ <span class="blink">█</span></div>
+  </div>
+</footer>
+
+<script>
+// cursor tracker
+document.addEventListener('mousemove',e=>{
+  document.body.style.setProperty('--cx',e.clientX+'px');
+  document.body.style.setProperty('--cy',e.clientY+'px');
+});
+
+// scroll reveal
+const els=document.querySelectorAll('.reveal');
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      setTimeout(()=>e.target.classList.add('on'),i*80);
+      obs.unobserve(e.target);
+    }
+  });
+},{threshold:0.08});
+els.forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
