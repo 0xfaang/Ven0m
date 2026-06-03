@@ -3,822 +3,741 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>VEN0M :: PORTFOLIO</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=VT323&display=swap" rel="stylesheet"/>
+<title>V3N0M — Red Team Operator</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Cabinet+Grotesk:wght@300;400;500;700;800;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 
 :root{
-  --black:#000000;
-  --near:#050003;
-  --panel:#0a0008;
-  --deep:#100010;
-  --b1:#1a0025;
-  --b2:#280035;
-  --b3:#3d0055;
-  --b4:#5c007a;
-  --b5:#7a009a;
-  --accent:#9400be;
-  --hi:#b800e8;
-  --glow:#cc00ff;
-  --bright:#dd44ff;
-  --text:#9966bb;
-  --dim:#4a2060;
-  --mute:#220033;
-  --whisper:#150020;
-  --white:#f5eeff;
-  --offwhite:#ddc8f0;
+  --bg:#08080a;
+  --bg2:#0f0f13;
+  --bg3:#161619;
+  --bg4:#1c1c22;
+  --bg5:#232329;
+  --border:#22222a;
+  --border2:#2e2e38;
+  --border3:#3a3a46;
+  --text:#eeeef2;
+  --text2:#9494a6;
+  --text3:#5c5c70;
+  --text4:#36363f;
+  --acc:#00e5b4;
+  --acc2:#00c49a;
+  --acc3:#008f70;
+  --acc4:#005546;
+  --acc-glow:rgba(0,229,180,0.1);
+  --acc-glow2:rgba(0,229,180,0.05);
+  --red:#ff3d6b;
+  --red-dim:rgba(255,61,107,0.12);
+  --white:#f0f0f5;
+  --r4:4px;--r8:8px;--r12:12px;--r16:16px;--r20:20px;
 }
 
-body{
-  background:var(--black);
-  color:var(--text);
-  font-family:'Share Tech Mono',monospace;
-  overflow-x:hidden;
-  cursor:crosshair;
-  min-height:100vh;
-}
+body{background:var(--bg);color:var(--text);font-family:'Cabinet Grotesk',sans-serif;overflow-x:hidden;line-height:1.6}
 
-/* ─── SCANLINES ─── */
-body::before{
-  content:'';position:fixed;inset:0;z-index:900;pointer-events:none;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.12) 2px,rgba(0,0,0,0.12) 4px);
-}
-
-/* ─── RAIN CANVAS ─── */
-#rain{position:fixed;inset:0;z-index:0;pointer-events:none}
+/* ─── ASCII CANVAS ─── */
+#ascii-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.22}
 
 /* ─── VIGNETTE ─── */
-.vig{
-  position:fixed;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(ellipse 75% 75% at 50% 50%,transparent 25%,rgba(0,0,0,0.6) 70%,rgba(0,0,0,0.97) 100%);
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 100% 100% at 50% 0%,transparent 20%,rgba(8,8,10,0.5) 65%,rgba(8,8,10,0.96) 100%)}
+
+/* ─── GRAIN ─── */
+.grain{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0.28;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.08'/%3E%3C/svg%3E");
+  background-size:180px}
+
+/* ─── NAV ─── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,4vw,56px);height:64px;background:rgba(8,8,10,0.75);border-bottom:1px solid var(--border);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-logo-mark{width:32px;height:32px;border-radius:var(--r8);background:var(--acc);display:flex;align-items:center;justify-content:center}
+.nav-logo-mark svg{width:16px;height:16px;stroke:var(--bg);fill:none;stroke-width:2.5}
+.nav-logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:var(--white);letter-spacing:-0.5px}
+.nav-links{display:flex;gap:clamp(16px,2.5vw,36px)}
+.nav-links a{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);text-decoration:none;letter-spacing:0.8px;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-right{display:flex;align-items:center;gap:clamp(8px,1.5vw,16px)}
+.nav-pill{display:flex;align-items:center;gap:7px;padding:6px 14px;border:1px solid var(--border2);border-radius:20px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)}
+.nav-pill-dot{width:6px;height:6px;border-radius:50%;background:var(--acc);animation:pulse-dot 2.5s ease-in-out infinite;flex-shrink:0}
+@keyframes pulse-dot{0%,100%{opacity:0.4;transform:scale(0.8)}50%{opacity:1;transform:scale(1)}}
+.btn-nav{padding:9px 22px;background:var(--acc);color:var(--bg);font-size:12px;font-weight:700;border-radius:var(--r8);text-decoration:none;transition:all .2s;font-family:'Cabinet Grotesk',sans-serif;letter-spacing:0.2px;white-space:nowrap}
+.btn-nav:hover{background:var(--acc2);transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,229,180,0.2)}
+@media(max-width:768px){.nav-links{display:none}.nav-pill{display:none}}
+
+/* ─── LAYOUT ─── */
+.wrap{position:relative;z-index:10;max-width:1120px;margin:0 auto;padding:0 clamp(20px,4vw,56px) 160px}
+
+/* ─── HERO ─── */
+.hero{min-height:100vh;display:grid;grid-template-columns:1fr auto;align-items:center;gap:clamp(24px,4vw,80px);padding:clamp(90px,12vh,140px) 0 clamp(60px,8vh,100px);position:relative}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding-top:90px}}
+
+.hero-left{display:flex;flex-direction:column}
+
+/* badge */
+.hero-badge-row{display:flex;align-items:center;gap:10px;margin-bottom:clamp(24px,4vh,40px);flex-wrap:wrap}
+.hbadge{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:20px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+.hbadge-green{background:rgba(0,229,180,0.08);color:var(--acc);border:1px solid rgba(0,229,180,0.2)}
+.hbadge-dim{background:var(--bg3);color:var(--text3);border:1px solid var(--border)}
+
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:clamp(11px,1.2vw,13px);color:var(--text3);letter-spacing:3px;text-transform:uppercase;margin-bottom:clamp(14px,2vh,22px)}
+
+/* BIG NAME */
+.hero-name{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(52px,9.5vw,120px);line-height:0.9;letter-spacing:clamp(-3px,-0.04em,-2px);color:var(--white);margin-bottom:clamp(16px,2.5vh,28px)}
+.hero-name .line2{display:block;color:var(--acc)}
+.hero-name .line3{display:block;font-weight:400;color:var(--text3);font-size:clamp(28px,4.5vw,56px);letter-spacing:clamp(-1px,-0.02em,0px)}
+
+.hero-desc{font-size:clamp(15px,1.5vw,17px);color:var(--text2);line-height:1.8;max-width:540px;font-weight:400;margin-bottom:clamp(28px,4vh,48px)}
+.hero-desc strong{color:var(--text);font-weight:600}
+
+.hero-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:clamp(40px,6vh,72px)}
+
+/* big stat row */
+.hero-stats{display:flex;gap:clamp(16px,3vw,48px);flex-wrap:wrap}
+.hstat{display:flex;flex-direction:column;gap:3px}
+.hstat-val{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(26px,3.5vw,40px);color:var(--white);letter-spacing:-1.5px;line-height:1}
+.hstat-val sup{font-size:0.45em;color:var(--acc);vertical-align:super}
+.hstat-key{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase}
+.hstat-div{width:1px;height:40px;background:var(--border);align-self:center;flex-shrink:0}
+
+/* HERO RIGHT — terminal widget */
+.hero-right{width:clamp(280px,30vw,380px)}
+@media(max-width:900px){.hero-right{width:100%;max-width:480px}}
+.terminal{border:1px solid var(--border2);border-radius:var(--r16);background:var(--bg2);overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.02)}
+.term-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg3);border-bottom:1px solid var(--border)}
+.tdot{width:10px;height:10px;border-radius:50%}
+.tdot-r{background:#ff5f57}.tdot-y{background:#febc2e}.tdot-g{background:#28c840}
+.term-title{flex:1;text-align:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px}
+.term-body{padding:20px;font-family:'DM Mono',monospace;font-size:12px;line-height:2;min-height:280px}
+.tl{display:block}.tc{color:var(--text3)}.tp{color:var(--acc)}.tv{color:var(--white)}.te{color:var(--red)}.ts{color:var(--text2)}.ty{color:#ffcc44}
+.tcursor{display:inline-block;width:8px;height:14px;background:var(--acc);vertical-align:middle;animation:tc 1s step-end infinite;margin-left:2px;border-radius:1px}
+@keyframes tc{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ─── SECTION COMMON ─── */
+section{margin-top:clamp(80px,10vh,140px)}
+.sec-eyebrow{display:flex;align-items:center;gap:14px;margin-bottom:clamp(10px,1.5vh,16px)}
+.sec-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--acc);letter-spacing:2px}
+.sec-rule{flex:1;height:1px;background:var(--border)}
+.sec-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(28px,4.5vw,52px);color:var(--white);letter-spacing:-1.5px;line-height:1.05;margin-bottom:10px}
+.sec-sub{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);letter-spacing:0.5px}
+
+/* ─── BUTTONS ─── */
+.btn-p{display:inline-flex;align-items:center;gap:8px;padding:clamp(11px,1.5vw,14px) clamp(20px,2.5vw,30px);background:var(--acc);color:var(--bg);font-size:clamp(13px,1.2vw,15px);font-weight:700;border-radius:var(--r8);text-decoration:none;transition:all .2s;font-family:'Cabinet Grotesk',sans-serif;white-space:nowrap}
+.btn-p:hover{background:var(--acc2);transform:translateY(-2px);box-shadow:0 10px 36px rgba(0,229,180,0.22)}
+.btn-g{display:inline-flex;align-items:center;gap:8px;padding:clamp(11px,1.5vw,14px) clamp(20px,2.5vw,30px);border:1px solid var(--border2);color:var(--text2);font-size:clamp(13px,1.2vw,15px);font-weight:500;border-radius:var(--r8);text-decoration:none;transition:all .2s;font-family:'Cabinet Grotesk',sans-serif;white-space:nowrap;background:transparent}
+.btn-g:hover{border-color:var(--border3);color:var(--text);background:var(--bg3)}
+.btn-icon{width:16px;height:16px;flex-shrink:0}
+
+/* ─── SKILLS GRID ─── */
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r16);overflow:hidden;margin-top:clamp(28px,4vh,44px)}
+@media(max-width:860px){.skills-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.skills-grid{grid-template-columns:1fr}}
+
+.sk-card{background:var(--bg);padding:clamp(24px,3vw,38px) clamp(20px,2.5vw,32px);position:relative;overflow:hidden;transition:background .3s;cursor:default}
+.sk-card:hover{background:var(--bg2)}
+.sk-card-top{height:2px;position:absolute;top:0;left:0;right:0;background:transparent;transition:background .3s}
+.sk-card:hover .sk-card-top{background:linear-gradient(90deg,var(--acc),transparent 70%)}
+.sk-ico{width:42px;height:42px;border-radius:var(--r8);background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:clamp(18px,2.5vh,28px);transition:all .3s;flex-shrink:0}
+.sk-card:hover .sk-ico{background:var(--acc-glow);border-color:var(--acc3)}
+.sk-ico svg{width:20px;height:20px;stroke:var(--text3);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
+.sk-card:hover .sk-ico svg{stroke:var(--acc)}
+.sk-tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.sk-title{font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(15px,1.5vw,18px);color:var(--white);letter-spacing:-0.3px;margin-bottom:12px}
+.sk-body{font-size:clamp(12px,1.1vw,13px);color:var(--text3);line-height:1.85;font-weight:400}
+.sk-body code{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);background:var(--bg3);padding:1px 6px;border-radius:3px}
+.sk-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:clamp(14px,2vh,20px)}
+.sk-tag-pill{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.5px;padding:4px 10px;border-radius:var(--r4);background:var(--bg3);border:1px solid var(--border);color:var(--text3);transition:all .2s}
+.sk-card:hover .sk-tag-pill{border-color:var(--border2);color:var(--text2)}
+/* ghost empty card */
+.sk-card.ghost{background:var(--bg2);opacity:0.5}
+.sk-card.ghost .sk-ico{opacity:0.3}
+
+/* ─── ABOUT ─── */
+.about-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:clamp(32px,5vw,80px);align-items:start;margin-top:clamp(28px,4vh,44px)}
+@media(max-width:760px){.about-grid{grid-template-columns:1fr}}
+.about-p{font-size:clamp(14px,1.3vw,16px);color:var(--text2);line-height:1.9;margin-bottom:22px;font-weight:400}
+.about-p strong{color:var(--text);font-weight:600}
+.about-p .hl{color:var(--acc)}
+.about-aside{display:flex;flex-direction:column;gap:12px}
+.aside-item{display:flex;gap:16px;padding:18px 20px;border:1px solid var(--border);border-radius:var(--r12);background:var(--bg2);transition:border-color .25s;position:relative;overflow:hidden}
+.aside-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--border);border-radius:2px 0 0 2px;transition:background .3s}
+.aside-item:hover{border-color:var(--border2)}.aside-item:hover::before{background:var(--acc)}
+.aside-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.aside-text{flex:1}
+.aside-title{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--white);letter-spacing:-0.2px;margin-bottom:4px}
+.aside-body{font-size:12px;color:var(--text3);line-height:1.6}
+
+/* ─── MINDSET ROW ─── */
+.mindset-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:clamp(48px,6vh,80px)}
+@media(max-width:680px){.mindset-row{grid-template-columns:1fr}}
+.mind-card{padding:clamp(22px,3vw,30px) clamp(20px,2.5vw,28px);border:1px solid var(--border);border-radius:var(--r12);background:var(--bg2);transition:all .25s;position:relative;overflow:hidden}
+.mind-card:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.3)}
+.mind-card::after{content:attr(data-n);position:absolute;bottom:-10px;right:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:72px;color:var(--bg3);line-height:1;pointer-events:none;letter-spacing:-4px}
+.mind-n{font-family:'DM Mono',monospace;font-size:10px;color:var(--text4);letter-spacing:2px;margin-bottom:14px}
+.mind-title{font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(14px,1.5vw,16px);color:var(--white);letter-spacing:-0.3px;margin-bottom:10px}
+.mind-body{font-size:clamp(12px,1.1vw,13px);color:var(--text3);line-height:1.8}
+
+/* ─── LEARNING SECTION ─── */
+.learn-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2vw,20px);margin-top:clamp(28px,4vh,44px)}
+@media(max-width:640px){.learn-grid{grid-template-columns:1fr}}
+.lcard{border:1px solid var(--border);border-radius:var(--r16);background:var(--bg2);overflow:hidden;transition:border-color .25s}
+.lcard:hover{border-color:var(--border2)}
+.lcard-head{padding:clamp(18px,2.5vw,26px) clamp(18px,2.5vw,28px) clamp(14px,2vh,20px);display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.lcard-meta .lcard-tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.lcard-meta .lcard-title{font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(15px,1.5vw,17px);color:var(--white);letter-spacing:-0.3px}
+.lcard-status{padding:4px 12px;border-radius:20px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;background:rgba(0,229,180,0.08);color:var(--acc);border:1px solid rgba(0,229,180,0.18);white-space:nowrap;flex-shrink:0}
+.lcard-items{padding:0 clamp(18px,2.5vw,28px) clamp(18px,2.5vw,26px);display:flex;flex-direction:column;gap:9px}
+.lcard-item{font-size:clamp(11px,1.1vw,13px);color:var(--text3);line-height:1.65;padding-left:20px;position:relative}
+.lcard-item::before{content:'';position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:var(--bg5);border:1px solid var(--border2);transition:background .3s,border-color .3s}
+.lcard:hover .lcard-item::before{background:var(--acc4);border-color:var(--acc3)}
+
+/* ─── ROADMAP ─── */
+.roadmap-wrap{margin-top:clamp(28px,4vh,44px);position:relative}
+.roadmap-wrap::before{content:'';position:absolute;left:19px;top:28px;bottom:28px;width:1px;background:linear-gradient(180deg,var(--acc) 0%,var(--border) 45%);z-index:0}
+@media(max-width:600px){.roadmap-wrap::before{left:15px}}
+
+.rm-item{display:flex;gap:clamp(20px,3vw,36px);padding:clamp(20px,3vh,30px) 0;border-bottom:1px solid var(--border);position:relative;align-items:flex-start}
+.rm-item:last-child{border-bottom:none}
+.rm-dot{width:38px;height:38px;border-radius:50%;border:1px solid var(--border2);background:var(--bg2);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;z-index:1;transition:all .3s;margin-top:4px}
+@media(max-width:600px){.rm-dot{width:30px;height:30px;margin-top:6px}}
+.rm-dot svg{width:14px;height:14px;stroke:var(--text3);fill:none;stroke-width:2}
+.rm-dot.done{border-color:var(--acc3);background:var(--acc-glow)}.rm-dot.done svg{stroke:var(--acc)}
+.rm-dot.active{border-color:var(--acc);background:var(--acc-glow);animation:pr 2s ease-in-out infinite}.rm-dot.active svg{stroke:var(--acc)}
+@keyframes pr{0%,100%{box-shadow:0 0 0 0 rgba(0,229,180,0.25)}60%{box-shadow:0 0 0 10px rgba(0,229,180,0)}}
+.rm-body{flex:1;padding-top:6px}
+.rm-head{display:flex;align-items:center;gap:12px;margin-bottom:7px;flex-wrap:wrap}
+.rm-title{font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(14px,1.4vw,16px);color:var(--white);letter-spacing:-0.2px}
+.rm-badge{padding:3px 11px;border-radius:20px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.8px;white-space:nowrap}
+.rb-done{background:rgba(0,229,180,0.08);color:var(--acc);border:1px solid rgba(0,229,180,0.2)}
+.rb-active{background:rgba(255,204,68,0.08);color:#ffcc44;border:1px solid rgba(255,204,68,0.2)}
+.rb-soon{background:var(--bg3);color:var(--text3);border:1px solid var(--border)}
+.rm-desc{font-size:clamp(12px,1.2vw,13px);color:var(--text3);line-height:1.8;max-width:620px}
+
+/* ─── QUOTE ─── */
+.quote-block{margin-top:clamp(60px,8vh,100px);padding:clamp(36px,5vw,64px);border:1px solid var(--border);border-radius:var(--r20);background:var(--bg2);position:relative;overflow:hidden;text-align:center}
+.quote-block::before{content:'"';position:absolute;top:-20px;left:clamp(20px,4vw,48px);font-family:'Syne',sans-serif;font-size:200px;color:var(--bg3);line-height:1;pointer-events:none;font-weight:800}
+.quote-block::after{content:'';position:absolute;top:0;right:0;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,180,0.04) 0%,transparent 70%);pointer-events:none}
+.qtext{font-family:'Syne',sans-serif;font-weight:600;font-size:clamp(18px,2.5vw,28px);color:var(--white);line-height:1.45;letter-spacing:-0.5px;max-width:680px;margin:0 auto clamp(16px,2.5vh,24px);position:relative;z-index:1}
+.qsub{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);letter-spacing:2px;position:relative;z-index:1}
+
+/* ─── CTA ─── */
+.cta-block{margin-top:clamp(80px,10vh,140px);display:grid;grid-template-columns:1fr auto;gap:clamp(24px,4vw,60px);align-items:center;padding:clamp(36px,5vw,64px);border:1px solid var(--border2);border-radius:var(--r20);background:var(--bg2);position:relative;overflow:hidden;flex-wrap:wrap}
+@media(max-width:700px){.cta-block{grid-template-columns:1fr}}
+.cta-block::after{content:'';position:absolute;bottom:-60px;right:-60px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,180,0.06) 0%,transparent 70%);pointer-events:none}
+.cta-tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--acc);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
+.cta-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(24px,3.5vw,40px);color:var(--white);letter-spacing:-1.5px;line-height:1.1;margin-bottom:14px}
+.cta-desc{font-size:clamp(13px,1.3vw,15px);color:var(--text2);line-height:1.75;max-width:480px;font-weight:400}
+.cta-actions{display:flex;flex-direction:column;gap:10px;align-items:flex-end;flex-shrink:0}
+@media(max-width:700px){.cta-actions{align-items:flex-start;flex-direction:row;flex-wrap:wrap}}
+.cta-email{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:0.5px;text-align:right}
+.cta-email span{color:var(--text2)}
+
+/* ─── FOOTER ─── */
+footer{margin-top:80px;padding-top:28px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+.foot-l{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)}.foot-l span{color:var(--text2)}
+.foot-r{display:flex;gap:clamp(14px,2vw,24px);flex-wrap:wrap}
+.foot-r a{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);text-decoration:none;transition:color .2s;letter-spacing:0.5px}
+.foot-r a:hover{color:var(--text)}
+
+/* ─── ANIMATIONS ─── */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1)}
+.reveal.vis{opacity:1;transform:none}
+
+/* hero animations */
+.hero-eyebrow{animation:fu .6s .1s both}
+.hero-badge-row{animation:fu .6s 0s both}
+.hero-name{animation:fu .7s .18s both}
+.hero-desc{animation:fu .7s .34s both}
+.hero-actions{animation:fu .7s .46s both}
+.hero-stats{animation:fu .7s .58s both}
+.hero-right{animation:fu .8s .3s both}
+@keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+/* SECTION stagger */
+.sk-card,.mind-card,.lcard,.rm-item,.aside-item{
+  opacity:0;transform:translateY(16px);
+  transition:opacity .5s cubic-bezier(.4,0,.2,1),transform .5s cubic-bezier(.4,0,.2,1);
 }
 
-/* ─── BORDER GLOW EDGES ─── */
-.edge-l,.edge-r{position:fixed;top:0;bottom:0;width:1px;z-index:5;pointer-events:none}
-.edge-l{left:0;background:linear-gradient(180deg,transparent,var(--b4) 30%,var(--b3) 70%,transparent)}
-.edge-r{right:0;background:linear-gradient(180deg,transparent,var(--b4) 30%,var(--b3) 70%,transparent)}
-
-/* ─── HUD CORNERS ─── */
-.hud{position:fixed;font-family:'Share Tech Mono',monospace;font-size:9px;
-  letter-spacing:2px;pointer-events:none;z-index:20;line-height:2;color:var(--dim)}
-.hud-tl{top:16px;left:20px}
-.hud-tr{top:16px;right:20px;text-align:right}
-.hud-bl{bottom:16px;left:20px}
-.hud-br{bottom:16px;right:20px;text-align:right}
-.hud .hi{color:var(--b5)}
-.hud .act{color:var(--glow);text-shadow:0 0 6px var(--hi)}
-
-/* ─── WRAP ─── */
-.wrap{position:relative;z-index:10;max-width:1000px;margin:0 auto;padding:0 36px 140px}
-
-/* ════════════════════════════════
-   HERO
-════════════════════════════════ */
-.hero{
-  min-height:100vh;display:flex;flex-direction:column;
-  justify-content:center;padding:80px 0 60px;
-}
-
-/* boot log */
-.boot{margin-bottom:32px;font-size:10px;letter-spacing:1px;line-height:2.2}
-.boot .ok{color:var(--b5)}
-.boot .dim{color:var(--dim)}
-.boot .cmd{color:var(--bright)}
-.boot .err{color:#660033}
-
-/* terminal chrome */
-.term{border:1px solid var(--b3);background:var(--black);position:relative}
-.term-bar{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 16px;background:var(--panel);
-  border-bottom:1px solid var(--b2);
-}
-.dot{width:9px;height:9px;border-radius:50%}
-.dot-r{background:#1a0008;border:1px solid #440018}
-.dot-y{background:#1a1200;border:1px solid #443000}
-.dot-g{background:#001a00;border:1px solid #003a00}
-.tpath{margin-left:10px;font-size:10px;color:var(--dim);letter-spacing:2px}
-.tpath b{color:var(--b5)}
-
-/* ascii name */
-.aname{
-  font-family:'Share Tech Mono',monospace;
-  font-size:clamp(6.5px,1.2vw,11px);
-  line-height:1.2;white-space:pre;overflow-x:auto;
-  padding:28px 30px 22px;
-  color:var(--bright);
-  text-shadow:0 0 6px var(--hi),0 0 20px rgba(184,0,232,0.15);
-  animation:nameflick 14s infinite;
-  position:relative;
-}
-@keyframes nameflick{
-  0%,90%,100%{opacity:1}
-  91%{opacity:0.6}92%{opacity:1}93%{opacity:0.3}94%{opacity:1}
-}
-
-/* sub bar */
-.term-foot{
-  border-top:1px solid var(--b2);padding:8px 30px;
-  font-size:9px;letter-spacing:4px;color:var(--dim);
-  display:flex;justify-content:space-between;align-items:center;
-}
-.term-foot .live{color:var(--b5);animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:0.4}50%{opacity:1}}
-
-/* identity block */
-.ident{margin-top:44px}
-.ident-prompt{font-size:10px;color:var(--dim);letter-spacing:2px;margin-bottom:10px}
-.ident-prompt span{color:var(--b5)}
-.name{
-  font-family:'Orbitron',sans-serif;font-weight:900;
-  font-size:clamp(46px,9vw,96px);
-  color:var(--white);letter-spacing:10px;line-height:0.9;
-  text-shadow:0 0 1px var(--b4);
-}
-.name .p1{color:var(--bright)}
-.name .p2{color:var(--hi)}
-.cur{
-  display:inline-block;width:5px;height:.82em;
-  background:var(--glow);vertical-align:middle;margin-left:8px;
-  animation:cur 1.05s step-end infinite;
-}
-@keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
-.role{
-  margin-top:12px;font-size:10px;letter-spacing:5px;
-  color:var(--dim);text-transform:uppercase;
-}
-.role::before{content:'// ';color:var(--b4)}
-
-/* phrase */
-.phrase{
-  margin-top:20px;padding:14px 20px;border-left:2px solid var(--b4);
-  background:var(--panel);font-size:12px;color:var(--dim);
-  letter-spacing:1px;line-height:1.8;font-style:italic;
-  max-width:640px;
-}
-.phrase span{color:var(--text);font-style:normal}
-
-/* stat grid */
-.stats{
-  margin-top:36px;display:grid;
-  grid-template-columns:repeat(4,auto) 1fr;
-  width:fit-content;gap:0;
-  border:1px solid var(--b3);
-}
-.stt{
-  padding:12px 24px;border-right:1px solid var(--b3);text-align:center;
-}
-.stt:last-child{border-right:none;padding:12px 32px}
-.sv{font-family:'VT323',monospace;font-size:26px;color:var(--bright);letter-spacing:3px}
-.sk{font-size:8px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-top:3px}
-
-/* skill chips */
-.chips{margin-top:26px;display:flex;flex-wrap:wrap;gap:8px}
-.chip{
-  font-size:9px;letter-spacing:3px;text-transform:uppercase;
-  padding:5px 14px;border:1px solid var(--b3);
-  color:var(--dim);background:transparent;position:relative;
-  transition:color .2s,border-color .2s;
-}
-.chip::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--b4)}
-.chip:hover{color:var(--bright);border-color:var(--b5)}
-.chip:hover::before{background:var(--glow)}
-
-/* ════════════════════════════════
-   DIVIDERS / SECTION HEADS
-════════════════════════════════ */
-section{margin-top:110px}
-
-.shead{margin-bottom:44px}
-.seyebrow{display:flex;align-items:center;gap:14px;margin-bottom:10px}
-.snum{font-family:'VT323',monospace;font-size:13px;color:var(--b4);letter-spacing:4px}
-.sline{flex:1;height:1px;background:linear-gradient(90deg,var(--b3),transparent)}
-.stitle{
-  font-family:'Orbitron',sans-serif;font-weight:900;
-  font-size:clamp(22px,3.5vw,36px);color:var(--white);
-  letter-spacing:6px;text-transform:uppercase;
-  position:relative;display:inline-block;
-}
-.stitle::after{
-  content:'';position:absolute;bottom:-8px;left:0;
-  width:36px;height:2px;background:var(--b5);
-}
-.ssub{font-size:9px;letter-spacing:4px;color:var(--dim);margin-top:18px}
-
-/* ════════════════════════════════
-   ACHIEVEMENT CARDS
-════════════════════════════════ */
-.cards{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
-  gap:1px;background:var(--b2);border:1px solid var(--b2);
-}
-
-.card{
-  background:var(--black);padding:30px 26px 28px;
-  position:relative;overflow:hidden;transition:background .25s;
-}
-.card:hover{background:var(--panel)}
-.card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,var(--b5),transparent 70%);
-}
-.card:hover::before{background:linear-gradient(90deg,var(--glow),transparent 60%)}
-
-/* big ghost number */
-.card::after{
-  content:attr(data-n);position:absolute;bottom:10px;right:16px;
-  font-family:'VT323',monospace;font-size:56px;
-  color:var(--whisper);line-height:1;pointer-events:none;
-  letter-spacing:0;
-}
-
-.ctag{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--b4);margin-bottom:12px}
-.ctitle{
-  font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;
-  color:var(--white);letter-spacing:2px;margin-bottom:14px;line-height:1.45;
-}
-.cbody{font-size:11px;color:var(--dim);line-height:1.95}
-.cbody code{color:var(--bright);font-size:10px}
-
-.ctags{display:flex;flex-wrap:wrap;gap:5px;margin-top:16px}
-.ct{
-  font-size:9px;letter-spacing:2px;text-transform:uppercase;
-  padding:3px 9px;border:1px solid var(--b2);color:var(--dim);
-  transition:color .2s,border-color .2s;
-}
-.card:hover .ct{border-color:var(--b3);color:var(--text)}
-
-/* ════════════════════════════════
-   QUOTE BANNER
-════════════════════════════════ */
-.banner{
-  margin-top:80px;
-  border-top:1px solid var(--b2);border-bottom:1px solid var(--b2);
-  padding:32px 0;text-align:center;
-  position:relative;overflow:hidden;
-}
-.banner::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,transparent,rgba(92,0,122,0.05),transparent);
-  animation:bannerswp 5s linear infinite;
-}
-@keyframes bannerswp{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-.bq{
-  font-family:'VT323',monospace;font-size:clamp(18px,3vw,28px);
-  color:var(--b4);letter-spacing:4px;
-}
-.bq span{color:var(--bright)}
-
-/* ════════════════════════════════
-   LEARNING
-════════════════════════════════ */
-.lgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-@media(max-width:600px){.lgrid{grid-template-columns:1fr}}
-
-.lcard{
-  border:1px solid var(--b2);background:var(--black);
-  position:relative;overflow:hidden;transition:border-color .25s;
-}
-.lcard:hover{border-color:var(--b4)}
-.lcard::before{
-  content:'';position:absolute;top:0;left:0;
-  width:2px;height:100%;background:linear-gradient(180deg,var(--b5),var(--b3));
-}
-.lhead{
-  padding:22px 26px 18px;border-bottom:1px solid var(--b2);
-  background:var(--panel);
-}
-.llabl{font-size:8px;letter-spacing:4px;color:var(--b4);text-transform:uppercase;margin-bottom:8px}
-.ltitle{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--white);letter-spacing:3px}
-.lbody{padding:22px 26px}
-.llist{list-style:none;display:flex;flex-direction:column;gap:10px}
-.llist li{
-  font-size:11px;color:var(--dim);line-height:1.6;
-  padding-left:20px;position:relative;
-}
-.llist li::before{content:'//';position:absolute;left:0;color:var(--b4);font-size:9px}
-
-/* ════════════════════════════════
-   PHILOSOPHY / MINDSET BLOCK
-════════════════════════════════ */
-.mindset{
-  margin-top:80px;
-  display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;
-  background:var(--b2);border:1px solid var(--b2);
-}
-@media(max-width:700px){.mindset{grid-template-columns:1fr}}
-.mcard{
-  background:var(--black);padding:28px 24px;
-  position:relative;transition:background .2s;
-}
-.mcard:hover{background:var(--panel)}
-.mcard::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,var(--b4),transparent)}
-.mico{
-  font-family:'VT323',monospace;font-size:36px;color:var(--b4);
-  margin-bottom:12px;letter-spacing:2px;
-}
-.mtitle{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;
-  color:var(--white);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
-.mbody{font-size:11px;color:var(--dim);line-height:1.9}
-
-/* ════════════════════════════════
-   COMING SOON
-════════════════════════════════ */
-.cs-wrap{display:flex;justify-content:center}
-.cs{
-  width:100%;max-width:680px;background:var(--black);
-  border:1px solid var(--b3);padding:64px 48px;
-  text-align:center;position:relative;overflow:hidden;
-}
-/* corner brackets */
-.cs .bk{position:absolute;width:20px;height:20px}
-.cs .bk::before,.cs .bk::after{content:'';position:absolute;background:var(--b5)}
-.bk.tl{top:-1px;left:-1px}
-.bk.tl::before{top:0;left:0;width:100%;height:1px}
-.bk.tl::after{top:0;left:0;width:1px;height:100%}
-.bk.tr{top:-1px;right:-1px}
-.bk.tr::before{top:0;right:0;width:100%;height:1px}
-.bk.tr::after{top:0;right:0;width:1px;height:100%}
-.bk.bl{bottom:-1px;left:-1px}
-.bk.bl::before{bottom:0;left:0;width:100%;height:1px}
-.bk.bl::after{bottom:0;left:0;width:1px;height:100%}
-.bk.br{bottom:-1px;right:-1px}
-.bk.br::before{bottom:0;right:0;width:100%;height:1px}
-.bk.br::after{bottom:0;right:0;width:1px;height:100%}
-
-/* sweep glow */
-.cs::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(110deg,transparent 40%,rgba(92,0,122,0.07) 50%,transparent 60%);
-  animation:cssweep 6s linear infinite;
-}
-@keyframes cssweep{0%{transform:translateX(-110%)}100%{transform:translateX(110%)}}
-
-.cs-top{
-  font-family:'Share Tech Mono',monospace;font-size:9px;
-  color:var(--b3);letter-spacing:2px;line-height:1.6;
-  margin-bottom:26px;white-space:pre;
-}
-.cs-main{
-  font-family:'Orbitron',sans-serif;font-weight:900;
-  font-size:clamp(18px,4vw,32px);color:var(--white);
-  letter-spacing:8px;text-transform:uppercase;
-}
-.cs-sub{margin-top:18px;font-size:10px;color:var(--dim);letter-spacing:4px}
-.cs-dots{display:flex;justify-content:center;gap:10px;margin-top:24px}
-.cs-dot{
-  width:5px;height:5px;border-radius:50%;background:var(--b4);
-  animation:cdot 2s ease-in-out infinite;
-}
-.cs-dot:nth-child(2){animation-delay:.35s}
-.cs-dot:nth-child(3){animation-delay:.7s}
-@keyframes cdot{0%,100%{opacity:.15;transform:scale(.7)}50%{opacity:1;transform:scale(1.4)}}
-
-/* ════════════════════════════════
-   TERMINAL LOG BLOCK
-════════════════════════════════ */
-.termlog{
-  margin-top:80px;
-  border:1px solid var(--b2);background:var(--black);
-}
-.tl-bar{
-  padding:8px 16px;background:var(--panel);
-  border-bottom:1px solid var(--b2);
-  font-size:9px;color:var(--dim);letter-spacing:3px;
-  display:flex;justify-content:space-between;
-}
-.tl-body{padding:22px 24px;font-size:10px;line-height:2.2;letter-spacing:1px}
-.tl-body .tc{color:var(--dim)}
-.tl-body .tp{color:var(--b5)}
-.tl-body .tv{color:var(--bright)}
-.tl-body .te{color:#440022}
-.tl-body .ts{color:var(--text)}
-
-/* ════════════════════════════════
-   FOOTER
-════════════════════════════════ */
-footer{
-  margin-top:100px;padding:26px 0;
-  border-top:1px solid var(--b2);
-  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
-}
-.fl{font-size:10px;color:var(--mute);letter-spacing:2px}
-.fl span{color:var(--b4)}
-.fr{font-family:'VT323',monospace;font-size:16px;color:var(--dim);letter-spacing:3px}
-
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-track{background:var(--black)}
-::-webkit-scrollbar-thumb{background:var(--b3)}
-::-webkit-scrollbar-thumb:hover{background:var(--b5)}
+/* ─── SELECTION ─── */
+::selection{background:rgba(0,229,180,0.18);color:var(--white)}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--border2)}
 </style>
 </head>
 <body>
 
-<canvas id="rain"></canvas>
-<div class="vig"></div>
-<div class="edge-l"></div>
-<div class="edge-r"></div>
+<!-- ANIMATED ASCII BACKGROUND -->
+<canvas id="ascii-canvas"></canvas>
+<div class="vignette"></div>
+<div class="grain"></div>
 
-<!-- HUD -->
-<div class="hud hud-tl">
-  <div><span class="hi">SYS</span> :: <span class="act" id="clk">00:00:00</span></div>
-  <div><span class="hi">USR</span> :: root</div>
-  <div><span class="hi">NET</span> :: <span class="act">LINKED</span></div>
-</div>
-<div class="hud hud-tr">
-  <div><span class="hi">SHELL</span> :: /bin/bash</div>
-  <div><span class="hi">UP</span> :: <span id="upt">0s</span></div>
-  <div><span class="hi">MEM</span> :: <span class="act">STABLE</span></div>
-</div>
-<div class="hud hud-bl">
-  <div><span id="hexv">0x00000000</span></div>
-  <div><span class="hi">SCAN</span> :: PASSIVE</div>
-</div>
-<div class="hud hud-br">
-  <div>VEN0M_OS v1.0</div>
-  <div>BUILD :: <span class="hi">STABLE</span></div>
-</div>
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-mark">
+      <svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+    </div>
+    <span class="nav-logo-text">V3N0M</span>
+  </div>
+  <div class="nav-links">
+    <a href="#skills">Skills</a>
+    <a href="#about">About</a>
+    <a href="#learning">Learning</a>
+    <a href="#roadmap">Roadmap</a>
+  </div>
+  <div class="nav-right">
+    <div class="nav-pill"><div class="nav-pill-dot"></div>Open to Opportunities</div>
+    <a href="#contact" class="btn-nav">Get in Touch</a>
+  </div>
+</nav>
 
 <div class="wrap">
 
-  <!-- ══════════ HERO ══════════ -->
-  <section class="hero">
-
-    <div class="boot" id="boot"></div>
-
-    <div class="ident">
-      <div class="ident-prompt"><span>$</span> whoami && echo $ROLE && uname -a</div>
-      <div class="name">V<span class="p1">3</span>N<span class="p2">0</span>M<span class="cur"></span></div>
-      <div class="role">Aspiring Cybersecurity Specialist</div>
-    </div>
-
-    <div class="phrase">
-      <span>"The quietest person in the room is usually reading your packets."</span><br/>
-      — Early in the game. Deep in the grind. Eyes on the kernel.
-    </div>
-
-    <div class="stats">
-      <div class="stt"><div class="sv">0x05</div><div class="sk">Skills Locked In</div></div>
-      <div class="stt"><div class="sv">0x02</div><div class="sk">Actively Loading</div></div>
-      <div class="stt"><div class="sv">001</div><div class="sk">Build Version</div></div>
-      <div class="stt"><div class="sv" id="sdays">000</div><div class="sk">Days Since Init</div></div>
-    </div>
-
-    <div class="chips">
-      <span class="chip">Networking Protocols</span>
-      <span class="chip">Python Scripting</span>
-      <span class="chip">Linux CLI</span>
-      <span class="chip">Vim</span>
-      <span class="chip">Packet Analysis</span>
-      <span class="chip">CIA Triad</span>
-    </div>
-
-  </section>
-
-  <!-- ══════════ 01 ACHIEVED ══════════ -->
-  <section id="sec01">
-    <div class="shead">
-      <div class="seyebrow"><span class="snum">// SECTION 01</span><div class="sline"></div></div>
-      <h2 class="stitle">Arsenal</h2>
-      <div class="ssub">cat /var/log/skills_acquired.log | grep "[CONFIRMED]"</div>
-    </div>
-
-    <div class="cards">
-
-      <div class="card" data-n="01">
-        <div class="ctag">Networking</div>
-        <div class="ctitle">Networking Protocols</div>
-        <div class="cbody">
-          Full TCP/IP model. IP addressing, subnetting, packet flow end-to-end.
-          Knows what DNS is actually resolving, why ARP exists, and what
-          happens when an ICMP reply never comes back.
-          Not just theory — understands what these look like on the wire.
+  <!-- ═══ HERO ═══ -->
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-badge-row">
+        <div class="hbadge hbadge-green">
+          <div class="nav-pill-dot"></div>
+          Building in 2026
         </div>
-        <div class="ctags">
-          <span class="ct">TCP/IP</span><span class="ct">DNS</span>
-          <span class="ct">DHCP</span><span class="ct">ARP</span>
-          <span class="ct">ICMP</span><span class="ct">HTTP/S</span>
-        </div>
+        <div class="hbadge hbadge-dim">// Red Team Track</div>
       </div>
 
-      <div class="card" data-n="02">
-        <div class="ctag">Scripting</div>
-        <div class="ctitle">Python — Core Foundations</div>
-        <div class="cbody">
-          Writing functional scripts. Variables, control flow, loops,
-          functions — nothing fancy yet, but the logic is there and
-          it runs. Starting to see Python the way hackers see it:
-          not a language, a <code>weapon</code> with syntax.
-        </div>
-        <div class="ctags">
-          <span class="ct">variables</span><span class="ct">loops</span>
-          <span class="ct">functions</span><span class="ct">I/O</span>
-        </div>
+      <div class="hero-eyebrow">Future Red Team Operator</div>
+
+      <h1 class="hero-name">
+        Ven0m.<span class="line2">Security</span><span class="line3">from first principles.</span>
+      </h1>
+
+      <p class="hero-desc">
+        Building a foundation in <strong>network security, Linux internals, and scripting</strong> — methodically, deliberately, deeply. Not chasing certificates. Chasing <strong>genuine understanding</strong> of how systems work and how they break.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#skills" class="btn-p">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
+          View Arsenal
+        </a>
+        <a href="#roadmap" class="btn-g">
+          See the Roadmap →
+        </a>
       </div>
 
-      <div class="card" data-n="03">
-        <div class="ctag">Linux</div>
-        <div class="ctitle">Linux CLI — Fundamentals</div>
-        <div class="cbody">
-          Navigates the filesystem without flinching. Creates, moves,
-          removes. Sets permissions with <code>chmod</code>, owns files
-          with <code>chown</code>, executes scripts. Comfortable being
-          dropped into a shell with no GUI and zero anxiety.
-        </div>
-        <div class="ctags">
-          <span class="ct">mkdir/rm</span><span class="ct">chmod</span>
-          <span class="ct">chown</span><span class="ct">bash exec</span>
-        </div>
-      </div>
-
-      <div class="card" data-n="04">
-        <div class="ctag">Editor</div>
-        <div class="ctitle">Vim — Full Terminal Editing</div>
-        <div class="cbody">
-          Lives inside Vim. Normal, insert, visual — switches on reflex.
-          Find-and-replace, save, exit, no mouse, no problem.
-          Most people see a terminal and think limitation.
-          Ven0m sees a <code>canvas</code>.
-        </div>
-        <div class="ctags">
-          <span class="ct">normal mode</span><span class="ct">insert</span>
-          <span class="ct">visual</span><span class="ct">:wq</span>
-        </div>
-      </div>
-
-      <div class="card" data-n="05">
-        <div class="ctag">Security</div>
-        <div class="ctitle">CyberSec — First Principles</div>
-        <div class="cbody">
-          CIA triad internalized. Understands attack surfaces, threat
-          vectors, and why defenders think differently from developers.
-          The mindset shift has already happened — now it's just
-          building the <code>technical depth</code> to match it.
-        </div>
-        <div class="ctags">
-          <span class="ct">CIA triad</span><span class="ct">threat models</span>
-          <span class="ct">attack surface</span>
-        </div>
-      </div>
-
+      <!-- STATS: removed "Core Skills" and "Days Grinding" -->
+    
     </div>
-  </section>
 
-  <!-- ══════════ MINDSET BLOCK ══════════ -->
-  <div class="mindset">
-    <div class="mcard">
-      <div class="mico">[!]</div>
-      <div class="mtitle">The Grind Mentality</div>
-      <div class="mbody">
-        Every senior was once a beginner who refused to quit.
-        The terminal doesn't care about your background —
-        it only cares if you typed it right.
-      </div>
-    </div>
-    <div class="mcard">
-      <div class="mico">[?]</div>
-      <div class="mtitle">Question Everything</div>
-      <div class="mbody">
-        Why does this port respond? Who configured this permission?
-        What happens if I send a malformed packet here?
-        Curiosity is the first tool in the kit.
-      </div>
-    </div>
-    <div class="mcard">
-      <div class="mico">[#]</div>
-      <div class="mtitle">Root or Nothing</div>
-      <div class="mbody">
-        Not satisfied with surface-level knowledge. The goal is
-        kernel-level understanding — how the system actually works
-        underneath everything else.
+    <div class="hero-right">
+      <div class="terminal">
+        <div class="term-bar">
+          <span class="tdot tdot-r"></span>
+          <span class="tdot tdot-y"></span>
+          <span class="tdot tdot-g"></span>
+          <span class="term-title">ven0m@localhost — bash</span>
+        </div>
+        <div class="term-body" id="term-body">
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ══════════ TERMINAL LOG ══════════ -->
-  <div class="termlog">
-    <div class="tl-bar"><span>ven0m@localhost :: /dev/tty0</span><span>read-only</span></div>
-    <div class="tl-body">
-      <div><span class="tc">[00:00:01]</span> <span class="tp">INIT</span>  <span class="ts">System identity loaded. Signature: VEN0M_01</span></div>
-      <div><span class="tc">[00:00:02]</span> <span class="tp">LOAD</span>  <span class="ts">Networking module: <span class="tv">ACTIVE</span></span></div>
-      <div><span class="tc">[00:00:03]</span> <span class="tp">LOAD</span>  <span class="ts">Linux CLI module: <span class="tv">ACTIVE</span></span></div>
-      <div><span class="tc">[00:00:04]</span> <span class="tp">LOAD</span>  <span class="ts">Python scripting module: <span class="tv">ACTIVE</span></span></div>
-      <div><span class="tc">[00:00:05]</span> <span class="tp">LOAD</span>  <span class="ts">Vim editor module: <span class="tv">ACTIVE</span></span></div>
-      <div><span class="tc">[00:00:06]</span> <span class="tp">WARN</span>  <span class="te">Linux internals module: LOADING... patience required</span></div>
-      <div><span class="tc">[00:00:07]</span> <span class="tp">WARN</span>  <span class="te">Wireshark module: LOADING... packets are being studied</span></div>
-      <div><span class="tc">[00:00:08]</span> <span class="tp">INFO</span>  <span class="ts">CyberSec mindset: <span class="tv">ONLINE</span></span></div>
-      <div><span class="tc">[00:00:09]</span> <span class="tp">INFO</span>  <span class="ts">Portfolio initialized. All systems nominal.</span></div>
-      <div><span class="tc">[00:00:10]</span> <span class="tp">SYS </span>  <span class="tv">root@ven0m:~$ _</span></div>
+  <!-- ═══ SKILLS ═══ -->
+  <section id="skills" class="reveal">
+    <div class="sec-eyebrow"><span class="sec-num">01 // arsenal</span><div class="sec-rule"></div></div>
+    <h2 class="sec-title">What I Bring</h2>
+    <p class="sec-sub">Confirmed. Practiced. Operational.</p>
+
+    <div class="skills-grid">
+      <div class="sk-card">
+        <div class="sk-card-top"></div>
+        <div class="sk-ico"><svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg></div>
+        <div class="sk-tag">Networking</div>
+        <div class="sk-title">Network Protocols</div>
+        <div class="sk-body">Full TCP/IP stack fluency. IP addressing, subnetting, and packet flow understood end-to-end — not just textbook theory but what it actually looks like <code>on the wire</code>.</div>
+        <div class="sk-tags"><span class="sk-tag-pill">TCP/IP</span><span class="sk-tag-pill">DNS</span><span class="sk-tag-pill">ARP</span><span class="sk-tag-pill">ICMP</span><span class="sk-tag-pill">HTTP/S</span></div>
+      </div>
+
+      <div class="sk-card">
+        <div class="sk-card-top"></div>
+        <div class="sk-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 9l3 3-3 3m5 0h3"/></svg></div>
+        <div class="sk-tag">Scripting</div>
+        <div class="sk-title">Python — Core</div>
+        <div class="sk-body">Writing functional scripts with solid logic. Variables, control flow, loops, functions — the foundation is real. Seeing Python as a <code>security instrument</code>, not just a language.</div>
+        <div class="sk-tags"><span class="sk-tag-pill">control flow</span><span class="sk-tag-pill">functions</span><span class="sk-tag-pill">file I/O</span><span class="sk-tag-pill">scripting</span></div>
+      </div>
+
+      <div class="sk-card">
+        <div class="sk-card-top"></div>
+        <div class="sk-ico"><svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></div>
+        <div class="sk-tag">Linux</div>
+        <div class="sk-title">Linux CLI</div>
+        <div class="sk-body">Navigates the filesystem without friction. <code>chmod</code>, <code>chown</code>, permissions, bash execution. Dropped into a shell with no GUI — zero anxiety. This is home.</div>
+        <div class="sk-tags"><span class="sk-tag-pill">filesystem</span><span class="sk-tag-pill">chmod/chown</span><span class="sk-tag-pill">bash</span><span class="sk-tag-pill">pipes</span></div>
+      </div>
+
+      <div class="sk-card">
+        <div class="sk-card-top"></div>
+        <div class="sk-ico"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+        <div class="sk-tag">Editor</div>
+        <div class="sk-title">Vim</div>
+        <div class="sk-body">Full terminal editing. Normal, insert, visual — on reflex. Find-replace, macros, no mouse required. The terminal is a <code>canvas</code>, not a constraint.</div>
+        <div class="sk-tags"><span class="sk-tag-pill">:wq</span><span class="sk-tag-pill">macros</span><span class="sk-tag-pill">visual mode</span><span class="sk-tag-pill">registers</span></div>
+      </div>
+
+      <div class="sk-card">
+        <div class="sk-card-top"></div>
+        <div class="sk-ico"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="sk-tag">Security</div>
+        <div class="sk-title">Security Fundamentals</div>
+        <div class="sk-body">CIA triad internalized as operating principle. Attack surfaces, threat vectors, defender mindset — the conceptual shift has happened. Now building technical depth to back it.</div>
+        <div class="sk-tags"><span class="sk-tag-pill">CIA triad</span><span class="sk-tag-pill">threat models</span><span class="sk-tag-pill">attack surface</span></div>
+      </div>
+
+      <div class="sk-card ghost">
+        <div class="sk-card-top"></div>
+        <div class="sk-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <div class="sk-tag">Incoming</div>
+        <div class="sk-title">More Loading</div>
+        <div class="sk-body">Wireshark, Linux internals, advanced bash scripting — the stack keeps growing. Every module listed in the roadmap below.</div>
+        <div class="sk-tags"><span class="sk-tag-pill">Wireshark</span><span class="sk-tag-pill">Bash+</span><span class="sk-tag-pill">more...</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ ABOUT ═══ -->
+  <section id="about" class="reveal">
+    <div class="sec-eyebrow"><span class="sec-num">02 // about</span><div class="sec-rule"></div></div>
+    <h2 class="sec-title">The Approach</h2>
+
+    <div class="about-grid">
+      <div class="about-left">
+        <p class="about-p">Starting from <strong>first principles</strong>. Not memorizing commands. Not rushing to certifications. Understanding <span class="hl">why systems work the way they do</span> — and therefore how they can be broken.</p>
+        <p class="about-p">The terminal doesn't care about background, geography, or who you know. It only cares whether <strong>you typed it right</strong>. That's the kind of meritocracy worth committing to fully.</p>
+        <p class="about-p">The path is clear — TCP/IP and networking done, Linux CLI and Python core locked in. Now going deep on <strong>Linux internals and Wireshark</strong>, then advancing to bash scripting, Python for offensive tooling, and eventually Red Team operations. Step by step. No shortcuts.</p>
+        <p class="about-p">Based in <strong>Siliguri, India</strong>. Remote-ready. Open to mentorship, internships, and any role that values depth over speed.</p>
+      </div>
+      <div class="about-aside">
+        <div class="aside-item">
+          <div class="aside-icon">🎯</div>
+          <div class="aside-text"><div class="aside-title">End Goal</div><div class="aside-body">Red Team Operator — performing offensive security operations at a professional level.</div></div>
+        </div>
+        <div class="aside-item">
+          <div class="aside-icon">🔬</div>
+          <div class="aside-text"><div class="aside-title">Learning Method</div><div class="aside-body">Concept-first. Understand the why before the how. Build things, break things, document everything.</div></div>
+        </div>
+        <div class="aside-item">
+          <div class="aside-icon">📍</div>
+          <div class="aside-text"><div class="aside-title">Current Focus</div><div class="aside-body">Linux internals and Wireshark — getting kernel-level understanding before advancing the stack.</div></div>
+        </div>
+        <div class="aside-item">
+          <div class="aside-icon">🌐</div>
+          <div class="aside-text"><div class="aside-title">Open To</div><div class="aside-body">Learning, apprenticeships, mentorship, and joining learning focused cybersecurity communities</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MINDSET -->
+  <div class="mindset-row reveal">
+    <div class="mind-card" data-n="01">
+      <div class="mind-n">// 01</div>
+      <div class="mind-title">Grind Mentality</div>
+      <div class="mind-body">Every senior was once a beginner who refused to quit. Slow progress beats no progress. The compound interest on daily consistency is enormous.</div>
+    </div>
+    <div class="mind-card" data-n="02">
+      <div class="mind-n">// 02</div>
+      <div class="mind-title">Question Everything</div>
+      <div class="mind-body">Why does this port respond? Who set this permission? What if I send a malformed packet here? Curiosity isn't a trait — it's the core skill.</div>
+    </div>
+    <div class="mind-card" data-n="03">
+      <div class="mind-n">// 03</div>
+      <div class="mind-title">Root or Nothing</div>
+      <div class="mind-body">Surface knowledge isn't enough. The goal is kernel-level understanding — how systems actually work beneath the abstractions everyone else stops at.</div>
     </div>
   </div>
 
-  <!-- ══════════ 02 LEARNING ══════════ -->
-  <section id="sec02">
-    <div class="shead">
-      <div class="seyebrow"><span class="snum">// SECTION 02</span><div class="sline"></div></div>
-      <h2 class="stitle">Currently Loading</h2>
-      <div class="ssub">tail -f /var/log/learning.log</div>
-    </div>
+  <!-- ═══ LEARNING ═══ -->
+  <section id="learning" class="reveal">
+    <div class="sec-eyebrow"><span class="sec-num">03 // learning</span><div class="sec-rule"></div></div>
+    <h2 class="sec-title">Currently Loading</h2>
+    <p class="sec-sub">Active. Measurable. Consistent.</p>
 
-    <div class="lgrid">
-
+    <div class="learn-grid">
+      <!-- Linux Internals card -->
       <div class="lcard">
-        <div class="lhead">
-          <div class="llabl">Linux</div>
-          <div class="ltitle">Linux Internals</div>
+        <div class="lcard-head">
+          <div class="lcard-meta">
+            <div class="lcard-tag">Linux</div>
+            <div class="lcard-title">Linux Internals</div>
+          </div>
         </div>
-        <div class="lbody">
-          <ul class="llist">
-            <li>Kernel architecture — what actually runs the show below userland</li>
-            <li>System call interface — how processes talk to the kernel</li>
-            <li>Process lifecycle, scheduling, and signal delivery</li>
-            <li>Filesystem hierarchy — inodes, dentries, and the VFS layer</li>
-            <li>Virtual vs physical memory — why your program lies about its address</li>
-            <li>Pipes, sockets, and the full IPC picture</li>
-            <li>User space vs kernel space — and why the wall exists</li>
-          </ul>
+        <div class="lcard-items">
+          <div class="lcard-item">Kernel architecture — what runs the show below userland</div>
+          <div class="lcard-item">System call interface — how processes talk to the kernel</div>
+          <div class="lcard-item">Process lifecycle, scheduling and signal delivery</div>
+          <div class="lcard-item">Filesystem hierarchy — inodes, dentries, VFS layer</div>
+          <div class="lcard-item">Virtual vs physical memory addressing</div>
+          <div class="lcard-item">Pipes, sockets, full IPC picture</div>
+          <div class="lcard-item">User space vs kernel space — why the wall exists</div>
         </div>
       </div>
 
+      <!-- Wireshark card — fixed: lcard-head properly closed, items inside card -->
       <div class="lcard">
-        <div class="lhead">
-          <div class="llabl">Network Analysis</div>
-          <div class="ltitle">Wireshark</div>
+        <div class="lcard-head">
+          <div class="lcard-meta">
+            <div class="lcard-tag">Network Analysis</div>
+            <div class="lcard-title">Wireshark</div>
+          </div>
         </div>
-        <div class="lbody">
-          <ul class="llist">
-            <li>Capture filters vs display filters — not the same thing</li>
-            <li>Watching TCP three-way handshakes happen in real time</li>
-            <li>Dissecting DNS queries down to the wire byte</li>
-            <li>Spotting malformed packets and traffic anomalies</li>
-            <li>Following full TCP streams — reading the conversation</li>
-            <li>Finding cleartext credentials hiding in plain sight</li>
-            <li>Protocol hierarchy breakdowns and flow graphs</li>
-          </ul>
+        <div class="lcard-items">
+          <div class="lcard-item">Capture filters vs display filters — not the same thing</div>
+          <div class="lcard-item">TCP three-way handshakes in real time</div>
+          <div class="lcard-item">Dissecting DNS queries to the wire byte</div>
+          <div class="lcard-item">Spotting malformed packets and traffic anomalies</div>
+          <div class="lcard-item">Following full TCP streams — reading conversations</div>
         </div>
       </div>
-
     </div>
   </section>
 
-  <!-- ══════════ QUOTE BANNER ══════════ -->
-  <div class="banner">
-    <div class="bq">"The best hackers aren't the loudest. <span>They're the ones still studying at 2AM.</span>"</div>
+  <!-- ═══ ROADMAP ═══ -->
+  <section id="roadmap" class="reveal">
+    <div class="sec-eyebrow"><span class="sec-num">04 // roadmap</span><div class="sec-rule"></div></div>
+    <h2 class="sec-title">The Path to Red Team</h2>
+    <p class="sec-sub">Honest. Deliberate. No shortcuts.</p>
+
+    <div class="roadmap-wrap">
+      <div class="rm-item">
+        <div class="rm-dot done"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/></svg></div>
+        <div class="rm-body">
+          <div class="rm-head"><div class="rm-title">TCP/IP &amp; Networking Fundamentals</div><div class="rm-badge rb-done">Complete</div></div>
+          <div class="rm-desc">Full protocol stack. DNS, DHCP, ARP, ICMP, HTTP/S — real comprehension, not just acronym recognition. Know what happens at each layer on the wire.</div>
+        </div>
+      </div>
+
+      <div class="rm-item">
+        <div class="rm-dot done"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/></svg></div>
+        <div class="rm-body">
+          <div class="rm-head"><div class="rm-title">Linux CLI &amp; Python Core</div><div class="rm-badge rb-done">Complete</div></div>
+          <div class="rm-desc">Filesystem mastery, permission control, bash execution. Python fundamentals — logic, functions, file I/O. Both functional as working tools, not classroom exercises.</div>
+        </div>
+      </div>
+
+      <div class="rm-item">
+        <div class="rm-dot active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg></div>
+        <div class="rm-body">
+          <div class="rm-head"><div class="rm-title">Linux Internals &amp; Wireshark</div><div class="rm-badge rb-active">Active Now</div></div>
+          <div class="rm-desc">Going kernel-deep. Kernel architecture, system calls, process scheduling, memory management. Parallel track on Wireshark — live packet capture and protocol analysis.</div>
+        </div>
+      </div>
+
+      <div class="rm-item">
+        <div class="rm-dot"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="rm-body">
+          <div class="rm-head"><div class="rm-title">Scripting & Programming</div><div class="rm-badge rb-soon">Next Up</div></div>
+          <div class="rm-desc">Bash and Python — Automating security tasks, building reconnaissance scripts, chaining tools together. Bash as a weapon — not just a shell.</div>
+        </div>
+      </div>
+
+      <div class="rm-item">
+        <div class="rm-dot"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="rm-body">
+          <div class="rm-head"><div class="rm-title">Web App Security</div><div class="rm-badge rb-soon">The Destination</div></div>
+          <div class="rm-desc">Full offensive engagements — OWASP 10</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUOTE -->
+  <div class="quote-block reveal">
+    <p class="qtext">"The best hackers aren't the loudest. They're the ones still studying at 2AM — building what others assume they already know."</p>
+    <span class="qsub">// Ven0m — 2026</span>
   </div>
 
-  <!-- ══════════ 03 COMING SOON ══════════ -->
-  <section id="sec03">
-    <div class="shead">
-      <div class="seyebrow"><span class="snum">// SECTION 03</span><div class="sline"></div></div>
-      <h2 class="stitle">Incoming</h2>
-      <div class="ssub">ls -la /home/ven0m/future/ &nbsp;# access denied — not yet</div>
+  <!-- ═══ CONTACT ═══ -->
+  <div id="contact" class="cta-block reveal">
+    <div class="cta-left">
+      <div class="cta-tag">// Get in Touch</div>
+      <h3 class="cta-title">Let's connect.</h3>
+      <p class="cta-desc">Open to remote internships, mentorship, and entry-level security roles. Early stage but fully committed — if you value potential, work ethic, and genuine curiosity over a polished resume, reach out.</p>
     </div>
-
-    <div class="cs-wrap">
-      <div class="cs">
-        <div class="bk tl"></div><div class="bk tr"></div>
-        <div class="bk bl"></div><div class="bk br"></div>
-        <pre class="cs-top">
- ┌────────────────────────────────────────────────┐
- │  >> SECTOR CLASSIFIED — CLEARANCE PENDING . . .│
- └────────────────────────────────────────────────┘</pre>
-        <div class="cs-main">MORE COMING SOON</div>
-        <div class="cs-sub">// CTF writeups. Projects. Tools. Certifications. The grind continues.</div>
-        <div class="cs-dots">
-          <div class="cs-dot"></div>
-          <div class="cs-dot"></div>
-          <div class="cs-dot"></div>
-        </div>
-      </div>
+    <div class="cta-actions">
+      <a href="mailto:bj101mj@gmail.com" class="btn-p">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Email
+      </a>
+      <div class="cta-email">Only email — <span>response within 24h</span></div>
     </div>
-  </section>
+  </div>
 
   <footer>
-    <div class="fl"><span>Ven0m</span> — Portfolio Build 01 — 2025</div>
-    <div class="fr">STAY CURIOUS. STAY DANGEROUS.</div>
+    <div class="foot-l">© 2026 <span>V3N0M</span> — Built from scratch. No templates, no shortcuts.</div>
+    <div class="foot-r">
+      <a href="#skills">Skills</a>
+      <a href="#learning">Learning</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#contact">Contact</a>
+    </div>
   </footer>
 
 </div>
 
 <script>
-/* ══════════════════════════════════════════════════
-   SANGUINE PURPLE ASCII RAIN
-   Single color family — dark purple characters only
-══════════════════════════════════════════════════ */
+/* ══════════════════════════════════
+   ANIMATED ASCII / MATRIX BACKGROUND
+══════════════════════════════════ */
 (function(){
-  const C = document.getElementById('rain');
-  const X = C.getContext('2d');
+  const cv = document.getElementById('ascii-canvas');
+  const ctx = cv.getContext('2d');
 
-  const GLYPHS = (
-    '01アイウエオカキクケコサシスセソタチツテトナニヌネノ'+
-    'ABCDEF0123456789'+
-    '!@#$%^&*()_+-=[]{}|;:,./<>?'+
-    '░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀'+
-    '\\/'
-  ).split('');
-
-  const PURPLES = [
-    'rgba(90,0,120,',
-    'rgba(110,0,150,',
-    'rgba(70,0,100,',
-    'rgba(130,0,180,',
-    'rgba(50,0,80,',
-    'rgba(160,0,210,',
+  const CHARS = '01アイウエオカキクケコサシスセソNETWORKSHELLROOTBASHPYTHONLINUXRED!@#$%&*[]{}|<>/\\░▒▓│┼═╔╗╚╝╠╣╦╩'.split('');
+  const COLS_COLORS = [
+    'rgba(0,229,180,',
+    'rgba(0,180,140,',
+    'rgba(0,140,110,',
+    'rgba(0,100,80,',
+    'rgba(0,60,48,',
   ];
 
-  let cols, rows, drops, speeds, pool;
-  const FS = 14;
+  let cols, drops, speeds, charSize;
 
-  function init(){
-    C.width  = window.innerWidth;
-    C.height = window.innerHeight;
-    cols  = Math.floor(C.width  / FS);
-    rows  = Math.floor(C.height / FS);
-    drops = Array.from({length:cols},()=>Math.random()*-rows);
-    speeds= Array.from({length:cols},()=>0.18+Math.random()*0.22);
-    pool  = PURPLES.map((_,i)=>i % PURPLES.length);
+  function resize(){
+    cv.width = window.innerWidth;
+    cv.height = window.innerHeight;
+    charSize = Math.max(10, Math.min(14, window.innerWidth / 100));
+    cols = Math.floor(cv.width / charSize);
+    drops = Array.from({length: cols}, () => Math.random() * -(cv.height / charSize));
+    speeds = Array.from({length: cols}, () => 0.08 + Math.random() * 0.14);
   }
-  init();
-  window.addEventListener('resize',init);
+  resize();
+  window.addEventListener('resize', resize);
 
   function frame(){
-    /* deep fade trail — keeps it dark */
-    X.fillStyle='rgba(0,0,0,0.07)';
-    X.fillRect(0,0,C.width,C.height);
-    X.font = FS+'px "Share Tech Mono",monospace';
+    ctx.fillStyle = 'rgba(8,8,10,0.06)';
+    ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.font = `${charSize}px "DM Mono", monospace`;
 
-    for(let i=0;i<cols;i++){
-      const g  = GLYPHS[Math.floor(Math.random()*GLYPHS.length)];
-      const x  = i*FS;
-      const y  = drops[i]*FS;
-      const pi = Math.floor(Math.random()*PURPLES.length);
-      const pa = 0.55 + Math.random()*0.35;
-      X.fillStyle = PURPLES[pi]+pa+')';
-      X.fillText(g,x,y);
+    for(let i = 0; i < cols; i++){
+      const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
+      const x = i * charSize;
+      const y = drops[i] * charSize;
+      const ci = Math.floor(Math.random() * COLS_COLORS.length);
+      const alpha = 0.3 + Math.random() * 0.55;
+      ctx.fillStyle = COLS_COLORS[ci] + alpha + ')';
+      ctx.fillText(ch, x, y);
 
-      /* trail ghost */
-      if(drops[i]>3){
-        const g2 = GLYPHS[Math.floor(Math.random()*GLYPHS.length)];
-        X.fillStyle = PURPLES[(pi+2)%PURPLES.length]+(0.08+Math.random()*0.1)+')';
-        X.fillText(g2,x,y-FS*3);
+      if(drops[i] > 2){
+        ctx.fillStyle = 'rgba(0,229,180,0.85)';
+        ctx.fillText(CHARS[Math.floor(Math.random() * CHARS.length)], x, y - charSize);
       }
 
-      if(y>C.height && Math.random()>0.972) drops[i]=0;
-      drops[i]+=speeds[i];
+      if(y > cv.height && Math.random() > 0.972) drops[i] = 0;
+      drops[i] += speeds[i];
     }
   }
-  setInterval(frame,42);
+
+  setInterval(frame, 44);
 })();
 
-/* ══════════════════════════════════════════════════
-   BOOT SEQUENCE
-══════════════════════════════════════════════════ */
+/* ══════════════════════════════════
+   TERMINAL TYPEWRITER
+══════════════════════════════════ */
 (function(){
-  const el = document.getElementById('boot');
   const lines = [
-    {html:`<span class="dim">[    0.000000]</span> VEN0M_OS kernel initializing...`, d:0},
-    {html:`<span class="dim">[    0.001337]</span> Loading cybersecurity mindset <span class="ok">[ OK ]</span>`, d:120},
-    {html:`<span class="dim">[    0.002500]</span> Registering network interfaces <span class="ok">[ OK ]</span>`, d:260},
-    {html:`<span class="dim">[    0.003800]</span> Mounting /proc/skills... <span class="ok">[ OK ]</span>`, d:410},
-    {html:`<span class="dim">[    0.004200]</span> <span class="err">WARNING: kernel modules still compiling — stay patient</span>`, d:560},
-    {html:`<span class="dim">[    0.005100]</span> Starting portfolio daemon <span class="cmd">ven0m-portfolio.sh</span>`, d:700},
-    {html:`<span class="dim">[    0.005900]</span> All systems nominal. <span class="ok">[ BOOT COMPLETE ]</span>`, d:860},
+    {t:'tc', c:'[2026-01-01 00:00:01]', post:''},
+    {t:'ts', c:' boot: loading VEN0M_OS...', post:''},
+    {t:'tc', c:'[2026-01-01 00:00:02]', post:''},
+    {t:'tp', c:' INIT', post:'', s:' networking: '},
+    {t:'tv', c:'OK', post:''},
+    {t:'tc', c:'[2026-01-01 00:00:03]', post:''},
+    {t:'tp', c:' LOAD', post:'', s:' python core: '},
+    {t:'tv', c:'ACTIVE', post:''},
+    {t:'tc', c:'[2026-01-01 00:00:04]', post:''},
+    {t:'tp', c:' LOAD', post:'', s:' linux CLI: '},
+    {t:'tv', c:'ACTIVE', post:''},
+    {t:'tc', c:'[2026-01-01 00:00:05]', post:''},
+    {t:'tp', c:' LOAD', post:'', s:' vim: '},
+    {t:'tv', c:'ACTIVE', post:''},
+    {t:'tc', c:'[2026-01-01 00:00:06]', post:''},
+    {t:'te', c:' WARN', post:'', s:' linux internals: loading...'},
+    {t:'tc', c:'[2026-01-01 00:00:07]', post:''},
+    {t:'te', c:' WARN', post:'', s:' wireshark: loading...'},
+    {t:'tc', c:'[2026-01-01 00:00:08]', post:''},
+    {t:'ts', c:' objective: RED TEAM OPERATOR', post:''},
+    {t:'tv', c:'root@ven0m:~$ _', post:'cursor'},
   ];
-  lines.forEach(({html,d})=>{
-    setTimeout(()=>{
-      const div=document.createElement('div');
-      div.innerHTML=html;
-      el.appendChild(div);
-    },d);
-  });
+
+  const body = document.getElementById('term-body');
+  let li = 0;
+
+  function nextLine(){
+    if(li >= lines.length) return;
+    const ln = lines[li++];
+    const row = document.createElement('span');
+    row.className = 'tl';
+    if(ln.post === 'cursor'){
+      row.innerHTML = `<span class="tv">root@ven0m:~$ </span><span class="tcursor"></span>`;
+    } else {
+      let html = `<span class="${ln.t}">${ln.c}</span>`;
+      if(ln.s) html += `<span class="ts">${ln.s}</span>`;
+      row.innerHTML = html;
+    }
+    body.appendChild(row);
+    body.scrollTop = body.scrollHeight;
+    const delay = li <= 5 ? 180 : 220;
+    setTimeout(nextLine, delay);
+  }
+
+  setTimeout(nextLine, 600);
 })();
 
-/* ══════════════════════════════════════════════════
-   CLOCKS / COUNTERS
-══════════════════════════════════════════════════ */
-function pad(v){return String(v).padStart(2,'0')}
-function tick(){
-  const n=new Date();
-  document.getElementById('clk').textContent=pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());
+/* ══════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════ */
+const revObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('vis'); revObs.unobserve(e.target); }});
+}, {threshold: 0.08, rootMargin: '0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el => revObs.observe(el));
+
+/* stagger children */
+function staggerObs(selector, delayStep){
+  const els = document.querySelectorAll(selector);
+  els.forEach((el, i) => {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if(e.isIntersecting){
+          setTimeout(() => { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; }, i * delayStep);
+          obs.unobserve(el);
+        }
+      });
+    }, {threshold: 0.05});
+    obs.observe(el);
+  });
 }
-tick(); setInterval(tick,1000);
+staggerObs('.sk-card', 70);
+staggerObs('.mind-card', 80);
+staggerObs('.lcard', 90);
+staggerObs('.rm-item', 60);
+staggerObs('.aside-item', 60);
 
-const T0=Date.now();
-setInterval(()=>{
-  document.getElementById('upt').textContent=Math.floor((Date.now()-T0)/1000)+'s';
-},1000);
-
-setInterval(()=>{
-  document.getElementById('hexv').textContent=
-    '0x'+Math.floor(Math.random()*0xFFFFFFFF).toString(16).toUpperCase().padStart(8,'0');
-},900);
-
-/* days since "init" — just a vibe number */
-document.getElementById('sdays').textContent=
-  String(Math.floor((Date.now()-new Date('2025-01-01').getTime())/86400000)).padStart(3,'0');
+/* active nav link highlight */
+const secs = ['skills','about','learning','roadmap','contact'];
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let curr = '';
+  secs.forEach(id => {
+    const el = document.getElementById(id);
+    if(el && window.scrollY >= el.offsetTop - 100) curr = id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + curr ? 'var(--text)' : '';
+  });
+}, {passive: true});
 </script>
 </body>
 </html>
